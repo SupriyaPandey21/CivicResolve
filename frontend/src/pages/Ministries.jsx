@@ -76,7 +76,7 @@ export default function Ministries() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search by name or service..."
-            className="cr-input pl-10"
+            className="cr-input pl-14"
           />
         </div>
 
