@@ -203,14 +203,27 @@ export default function Report() {
               </div>
 
               {photo && (
-                <div className="mt-4">
-                  <img
-                    src={photo.dataUrl}
-                    alt="evidence"
-                    className="rounded-lg border border-[var(--cr-border)] max-h-64"
-                  />
-                </div>
-              )}
+  <div className="mt-4">
+    <img
+      src={photo.dataUrl}
+      alt="evidence"
+      className="rounded-lg border border-[var(--cr-border)] max-h-64"
+    />
+
+    <button
+      type="button"
+      onClick={() => {
+        setPhoto(null);
+        if (fileRef.current) {
+          fileRef.current.value = "";
+        }
+      }}
+      className="mt-3 text-sm font-semibold text-[var(--cr-error)] underline"
+    >
+      Remove Photo
+    </button>
+  </div>
+)}
 
               <div className="flex justify-end mt-8">
                 <button
