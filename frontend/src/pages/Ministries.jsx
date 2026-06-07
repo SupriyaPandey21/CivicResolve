@@ -29,7 +29,7 @@ const ICONS = {
 };
 
 export default function Ministries() {
-  const [list, setList] = useState([]);
+  const [list, setList] = useState(null);
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
 
@@ -40,12 +40,14 @@ export default function Ministries() {
       .catch(() => setList([]));
   }, []);
 
-  const cats = [
-    "All",
-    ...Array.from(new Set(list.map((m) => m.category))),
-  ];
+  const safeList = Array.isArray(list) ? list : [];
 
-  const filtered = list.filter(
+const cats = [
+  "All",
+  ...Array.from(new Set(safeList.map((m) => m.category))),
+];
+
+const filtered = safeList.filter(
     (m) =>
       (cat === "All" || m.category === cat) &&
       (q === "" ||
@@ -76,7 +78,7 @@ export default function Ministries() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search by name or service..."
-            className="cr-input pl-14"
+            className="cr-input !pl-14"
           />
         </div>
 
@@ -96,7 +98,12 @@ export default function Ministries() {
           ))}
         </div>
       </div>
-
+         
+      {list === null && (
+  <div className="mt-10 text-[var(--cr-text-muted)]">
+    Loading ministries...
+  </div>
+)} 
       {/* Cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-8">
         {filtered.map((m) => {
@@ -140,7 +147,7 @@ export default function Ministries() {
           );
         })}
 
-        {filtered.length === 0 && (
+        {list !== null && filtered.length === 0 && (
           <div className="col-span-full text-center text-[var(--cr-text-muted)] py-12">
             No ministries match your search.
           </div>
