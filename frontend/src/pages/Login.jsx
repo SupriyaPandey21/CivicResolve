@@ -116,7 +116,14 @@ export default function Login() {
             className="cr-input mt-2 mb-6"
             placeholder="••••••••"
           />
-
+          <div className="text-right mb-5">
+  <Link
+    to="/forgot-password"
+    className="text-sm text-[var(--cr-primary)] font-semibold underline"
+  >
+    Forgot password?
+  </Link>
+</div>
           <button
             disabled={loading}
             className="cr-btn-primary w-full"

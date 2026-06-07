@@ -15,6 +15,8 @@ import Report from "./pages/Report";
 import Analysis from "./pages/Analysis";
 import Cases from "./pages/Cases";
 import CaseDetail from "./pages/CaseDetail";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/ministries" element={<Ministries />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             <Route
               path="/report"

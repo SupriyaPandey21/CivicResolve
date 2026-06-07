@@ -10,6 +10,7 @@ import json
 import bcrypt
 import jwt
 import logging
+import secrets
 
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional, Literal
@@ -117,7 +118,12 @@ class MinistryOut(BaseModel):
     website: str
     response_time: str
 
+class ForgotPasswordIn(BaseModel):
+    email: EmailStr
 
+class ResetPasswordIn(BaseModel):
+    token: str
+    new_password: str = Field(min_length=6) 
 # =========================================================
 # HELPERS
 # =========================================================
@@ -409,6 +415,59 @@ async def login(body: LoginIn):
 async def me(user=Depends(get_current_user)):
     return user_to_out(user)
 
+@api.post("/auth/forgot-password")
+async def forgot_password(body: ForgotPasswordIn):
+    email = body.email.lower()
+
+    user = await db.users.find_one({"email": email})
+
+    if not user:
+        return {"message": "If this email exists, a reset link has been generated."}
+
+    token = secrets.token_urlsafe(32)
+
+    await db.password_resets.insert_one({
+        "token": token,
+        "user_id": user["id"],
+        "email": email,
+        "created_at": now_iso(),
+        "used": False,
+    })
+
+    return {
+        "message": "Reset token generated.",
+        "reset_token": token,
+    }
+
+
+@api.post("/auth/reset-password")
+async def reset_password(body: ResetPasswordIn):
+    reset = await db.password_resets.find_one({
+        "token": body.token,
+        "used": False,
+    })
+
+    if not reset:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or expired token"
+        )
+
+    await db.users.update_one(
+        {"id": reset["user_id"]},
+        {
+            "$set": {
+                "password_hash": hash_password(body.new_password)
+            }
+        }
+    )
+
+    await db.password_resets.update_one(
+        {"token": body.token},
+        {"$set": {"used": True}}
+    )
+
+    return {"message": "Password reset successful"}
 
 # =========================================================
 # MINISTRIES
